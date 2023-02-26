@@ -20,13 +20,13 @@ function DragAndDrop() {
   const [selectedFileTitle, setSelectedFileTitle] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summary, setSummary] = useState('');
+  const [keyConcepts, setKeyConcepts] = useState('');
+  const [highlights, setHighlights] = useState('');
+  const [limitations, setLimitations] = useState('');
+  const [authors, setAuthors] = useState('');
+
   const [tables, setTables] = useState([]);
   const [figures, setFigures] = useState([]);
-  const [keyConcepts, setKeyConcepts] = useState([]);
-  const [abstract, setAbstract] = useState('');
-  const [highlights, setHighlights] = useState([]);
-  const [methods, setMethods] = useState([]);
-  const [limitations, setLimitations] = useState([]);
   const [dropdowns, setDropdowns] = useState([false, false, false]);
 
   const toggleDropdown = (index) => {
@@ -36,15 +36,13 @@ function DragAndDrop() {
 
   const [accordionState, setAccordionState] = useState({
     keyConcepts: false,
-    abstract: false,
     highlights: false,
     summary: false,
     tables: false,
     figures: false,
-    methods: false,
-    results: false,
     limitations: false,
     references: false,
+    authors: false
   });
 
   const handleAccordionClick = (section) => {
@@ -63,7 +61,6 @@ function DragAndDrop() {
   const handleDrop = (acceptedFiles) => {
     const formData = new FormData();
     formData.append('file', acceptedFiles[0]);
-    console.log(acceptedFiles[0])
     setIsUploading(true);
     setLoadingSummary(false);
     setTimeout(() => {axios.post('http://localhost:4949/upload',
@@ -76,23 +73,24 @@ function DragAndDrop() {
     ).then((response) => {
       if (response.status === 200) {
         const title = response.data.title;
-        const summary = response.data.summary;
         const tables = response.data.tables;
         const figures = response.data.figures;
+        
+        const authors = response.data.authors;
+        const summary = response.data.summary;
         const key_concepts = response.data.key_concepts;
-        const abstract = response.data.abstract;
         const highlights = response.data.highlights;
-        const methods = response.data.methods;
         const limitations = response.data.limitations;
+        
+        console.log(response.data)
         setUploadedFileTiles([...uploadedFileTitles, title]);
         setUploadedFileNames([...uploadedFileNames, acceptedFiles[0].name]);
         setFigures(figures);
+        setAuthors(authors);
         setTables(tables);
         setSummary(summary);
         setKeyConcepts(key_concepts);
-        setAbstract(abstract);
         setHighlights(highlights);
-        setMethods(methods);
         setLimitations(limitations);
       } else {
         alert('Failed to upload PDF file');
@@ -121,19 +119,17 @@ function DragAndDrop() {
         }
       ).then((response) => {
         if (response.status === 200) {
-          const summary = response.data.summary;
           const tables = response.data.tables;
           const figures = response.data.figures;
+          const authors = response.data.authors;
           const key_concepts = response.data.key_concepts;
-          const abstract = response.data.abstract;
+          const summary = response.data.summary;
           const highlights = response.data.highlights;
-          const methods = response.data.methods;
           const limitations = response.data.limitations;
           setSummary(summary);
+          setAuthors(authors);
           setKeyConcepts(key_concepts);
-          setAbstract(abstract);
           setHighlights(highlights);
-          setMethods(methods);
           setLimitations(limitations);
           setFigures(figures);
           setTables(tables);
@@ -168,35 +164,25 @@ function DragAndDrop() {
       <Box borderWidth="1px" borderRadius="lg" p="6" width={600}>
         <Accordion>
           <AccordionItem width="200">
+            <AccordionButton onClick={() => handleAccordionClick("authors")} _expanded={{ bg: 'tomato', color: 'white' }}>
+              <Box flex="1" textAlign="left">
+                Authors
+              </Box>
+            </AccordionButton>
+            <AccordionPanel pb={4} isOpen={accordionState.authors}>
+                <Text> {authors}</Text>
+            </AccordionPanel>
+          </AccordionItem>
+          <AccordionItem width="200">
             <AccordionButton onClick={() => handleAccordionClick("keyConcepts")} _expanded={{ bg: 'tomato', color: 'white' }}>
               <Box flex="1" textAlign="left">
                 Key Concepts
               </Box>
             </AccordionButton>
             <AccordionPanel pb={4} isOpen={accordionState.keyConcepts}>
-              <VStack alignItems="flex-start" spacing={4}>
-                {keyConcepts.map((keyConcept, index) => {
-                  return (
-                    <Text key={index}>{keyConcept}</Text>
-                  );
-                })}
-              </VStack>
+                <Text> {keyConcepts}</Text>
             </AccordionPanel>
           </AccordionItem>
-
-          <AccordionItem>
-            <AccordionButton onClick={() => handleAccordionClick("abstract")} _expanded={{ bg: 'tomato', color: 'white' }}>
-              <Box flex="1" textAlign="left">
-                Abstract
-              </Box>
-            </AccordionButton>
-            <AccordionPanel pb={4} isOpen={accordionState.abstract}>
-              <VStack alignItems="flex-start" spacing={4}>
-                <Text>{abstract}</Text>
-              </VStack>
-            </AccordionPanel>
-          </AccordionItem>
-
           <AccordionItem>
             <AccordionButton onClick={() => handleAccordionClick("highlights")} _expanded={{ bg: 'tomato', color: 'white' }}>
               <Box flex="1" textAlign="left">
@@ -204,13 +190,7 @@ function DragAndDrop() {
               </Box>
             </AccordionButton>
             <AccordionPanel pb={4} isOpen={accordionState.highlights}>
-              <VStack alignItems="flex-start" spacing={4}>
-                {highlights.map((highlight, index) => {
-                  return (
-                    <Text key={index}>{highlight}</Text>
-                  );
-                })}
-              </VStack>
+                <Text> {highlights}</Text>
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem>
@@ -220,27 +200,7 @@ function DragAndDrop() {
               </Box>
             </AccordionButton>
             <AccordionPanel pb={4} isOpen={accordionState.summary}>
-              <VStack alignItems="flex-start" spacing={4}>
                 <Text> {summary}</Text>
-              </VStack>
-            </AccordionPanel>
-          </AccordionItem>
-          <AccordionItem>
-            <AccordionButton onClick={() => handleAccordionClick("methods")} _expanded={{ bg: 'tomato', color: 'white' }}>
-              <Box flex="1" textAlign="left">
-                Methods
-              </Box>
-            </AccordionButton>
-            <AccordionPanel pb={4} isOpen={accordionState.methods}>
-              <VStack alignItems="flex-start" spacing={4}>
-                {
-                  methods.map((method, index) => {
-                    return (
-                      <Text key={index}>{method}</Text>
-                    );
-                  })
-                }
-              </VStack>
             </AccordionPanel>
           </AccordionItem>
           <AccordionItem>
@@ -250,15 +210,7 @@ function DragAndDrop() {
               </Box>
             </AccordionButton>
             <AccordionPanel pb={4} isOpen={accordionState.limitations}>
-              <VStack alignItems="flex-start" spacing={4}>
-                {
-                  limitations.map((limitation, index) => {
-                    return (
-                      <Text key={index}>{limitation}</Text>
-                    );
-                  })
-                }
-              </VStack>
+                <Text> {limitations}</Text>
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
