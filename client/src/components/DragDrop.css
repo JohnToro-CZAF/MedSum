@@ -1,0 +1,12 @@
+.DragDrop-container {
+  position: fixed;
+  bottom: 20px;
+  right: 5px;
+  width: 800px;
+  height: 650px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
