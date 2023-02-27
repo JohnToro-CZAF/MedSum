@@ -35,14 +35,15 @@ def fileUpload():
     filename = secure_filename(file.filename)
     file.save(UPLOAD_FOLDER + "/" + filename)
     print("Reading file...")
-    # try: 
-    reader.construct_index()
-    # except:
-    #     print("Error reading file... Aborting saving file")
-    #     os.remove(UPLOAD_FOLDER + "/" + filename)
+    try: 
+        # TODO: We have to make this function asynchronous
+        reader.construct_index()
+    except:
+        print("Error reading file... Aborting saving file")
+        os.remove(UPLOAD_FOLDER + "/" + filename)
     
     print("Done reading file...")
-    response = summarizer.get_summary(filename)
+    response = summarizer.get_summary(filename, reader)
     return response
 
 @app.route("/handle_message", methods=['GET','POST'])
