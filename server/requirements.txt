@@ -1,6 +1,7 @@
 python-dotenv
 flask
 flask_cors
+ariadne
 langchain
 gpt_index
 pdf2image

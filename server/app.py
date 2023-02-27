@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 from flask import Flask, flash, request, request, jsonify, abort, send_from_directory
 from flask_cors import CORS, cross_origin
+from ariadne.constants import PLAYGROUND_HTML
+from model import query
 
 from DocReader import DocReader
 from DocSummarizer import DocSummarizer
@@ -35,7 +37,7 @@ def fileUpload():
     filename = secure_filename(file.filename)
     file.save(UPLOAD_FOLDER + "/" + filename)
     print("Reading file...")
-    try: 
+    try:
         # TODO: We have to make this function asynchronous
         reader.construct_index()
     except:
@@ -68,6 +70,9 @@ def get_image(image_name):
         print("bullshit")
     return send_from_directory(app.config["CLIENT_IMAGES"] + '/' + dir_name, path=fn, as_attachment=True)
 
+@app.route("/graphql", methods=["GET"])
+def graphql_playground():
+    return PLAYGROUND_HTML, 200
 
 if __name__ == "__main__":
     app.secret_key = os.urandom(24)
